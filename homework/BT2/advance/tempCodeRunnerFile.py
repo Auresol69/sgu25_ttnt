@@ -1,0 +1,1 @@
+print(f'\nd. Phuong sai: [{v_sigma2: .2f}] va do lech chuan: [{v_var: .2f}]')
