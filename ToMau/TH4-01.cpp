@@ -72,6 +72,7 @@ void output()
 
 int main()
 {
+    freopen("color1.txt", "r", stdin);
     cin >> n >> m;
     input(v, n, m);
 

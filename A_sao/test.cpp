@@ -1,64 +1,107 @@
-#include <iostream>
-#include <vector>
-#include <fstream>
-#include <queue>
-#include <climits>
-#include <algorithm>
-
+#include <bits/stdc++.h>
+#define el cout << '\n'
+#define f0(i, n) for (ll i = 0; i < n; i++)
+#define f1(i, n) for (ll i = 1; i <= n; i++)
+#define pb push_back
+#define all(a) a.begin(), a.end()
 using namespace std;
+typedef long long ll;
+const ll oo = LLONG_MAX >> 1;
 
-class Node
+struct node
 {
-public:
-    int f_score, g_score, index, node_father;
-    Node(int f_score, int g_score, int index, int node_father)
+    ll value, id;
+    node() {}
+    node(ll value, ll id) : value(value), id(id) {}
+    bool operator<(const node &x) const
     {
-        this->f_score = f_score;
-        this->g_score = g_score;
-        this->index = index;
-        this->node_father = node_father;
-    }
-
-    bool operator>(const Node &other) const
-    {
-        return f_score > other.f_score;
+        return value > x.value;
     }
 };
 
-class A_Star
+ll n, m, st, ed;
+set<ll> close;
+priority_queue<node> open;
+vector<ll> f, h, p, g, tour;
+vector<vector<ll>> a;
+
+void solve()
 {
-private:
-    int n, m, s, t;
-    vector<vector<pair<int, int>>> adj; // Danh sách kề: {đỉnh, trọng số}
-    vector<int> h;
+    g[st] = 0;
+    f[st] = g[st] + h[st];
+    open.push(node(f[st], st));
 
-public:
-    int getN() const { return n; }
-    int getM() const { return m; }
-    int getS() const { return s; }
-    int getT() const { return t; }
-    vector<vector<pair<int, int>>> getAdj() const { return adj; }
-    vector<int> getH() const { return h; }
-
-    void ReadFile()
+    while (!open.empty())
     {
-        ifstream fin("graph1.txt");
-        if (!(fin >> n >> m >> s >> t))
-        {
-            cerr << "Error: Khong the doc\n";
-            exit(1);
-        }
+        ll curr = open.top().id;
+        open.pop();
 
-        cout << "Doc graph voi " << n << " dinh, " << m << " canh\n";
-        cout << "Start: " << s << ", End: " << t << endl;
+        if (close.count(curr))
+            continue;
+        else
+            close.insert(curr);
 
-        adj.resize(n + 1);
-        for (int i = 0; i < m; i++)
+        if (curr == ed)
+            break;
+
+        f1(i, n) if (a[curr][i] != oo)
         {
-            int u, v, w;
-            fin >> u >> v >> w;
-            adj[u].push_back({v, w});
-            adj[v].push_back({u, w});
+            if (close.count(i))
+                continue;
+            if (g[i] > g[curr] + a[curr][i])
+            {
+                g[i] = g[curr] + a[curr][i];
+                f[i] = g[i] + h[i];
+                p[i] = curr;
+                open.push(node(f[i], i));
+            }
         }
     }
-};
+}
+
+int main()
+{
+    freopen("graph2.txt", "r", stdin);
+    freopen("ans.txt", "w", stdout);
+    cin >> n >> st >> ed;
+    f.resize(n + 7, oo);
+    g.resize(n + 7, oo);
+    h.resize(n + 7, oo);
+    p.resize(n + 7, -1);
+    a.resize(n + 7, vector<ll>(n + 7, oo));
+
+    f1(i, m)
+    {
+        ll u, v, k;
+        cin >> u >> v >> k;
+        a[u][v] = k;
+        a[v][u] = k;
+    }
+
+    f1(i, n) f1(j, n)
+    {
+        cin >> a[i][j];
+        if (a[i][j] == 0)
+            a[i][j] = oo;
+    }
+
+    f1(i, n) cin >> h[i];
+    solve();
+
+    ll x = ed;
+    while (p[x] != -1)
+    {
+        tour.pb(x);
+        x = p[x];
+    }
+
+    tour.pb(x);
+    reverse(all(tour));
+
+    cout << g[ed], el;
+    cout << tour.size(), el;
+    for (ll x : tour)
+        cout << x << ' ';
+
+    return 0;
+}
