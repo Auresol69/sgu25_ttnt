@@ -21,48 +21,45 @@ bool find(const vector<int> &d, const int &x)
     return false;
 }
 
-void gts1(const int &n, vector<Street> &v, const vector<vector<int>> &a)
+void gts1(const int &n, vector<Street> &v, const vector<vector<int>> &a, const int &x)
 {
-    for (int z = 1; z <= n; z++)
+    vector<int> d;
+    int totalcost = 0;
+    int start = x;
+    d.push_back(x);
+
+    while (d.size() < n)
     {
-        vector<int> d;
-        int totalcost = 0;
-        int start = z;
-        d.push_back(z);
+        int min = INT_MAX;
+        int tmp = -1;
 
-        while (d.size() < n)
+        for (int i = 1; i <= n; i++)
         {
-            int min = INT_MAX;
-            int tmp = -1;
+            if (find(d, i))
+                continue;
 
-            for (int i = 1; i <= n; i++)
+            if (min > a[start][i])
             {
-                if (find(d, i))
-                    continue;
-
-                if (min > a[start][i])
-                {
-                    min = a[start][i];
-                    tmp = i;
-                }
+                min = a[start][i];
+                tmp = i;
             }
-
-            if (tmp != -1)
-                totalcost += min;
-
-            d.push_back(tmp);
-            start = tmp;
         }
 
-        totalcost += a[d.back()][z]; // Quay lại điểm ban đầu
-        d.push_back(z);
+        if (tmp != -1)
+            totalcost += min;
 
-        Street street;
-        street.start = z;
-        street.bestcost = totalcost;
-        street.bestpath = d;
-        v.push_back(street);
+        d.push_back(tmp);
+        start = tmp;
     }
+
+    totalcost += a[d.back()][x]; // Quay lại điểm ban đầu
+    d.push_back(x);
+
+    Street street;
+    street.start = x;
+    street.bestcost = totalcost;
+    street.bestpath = d;
+    v.push_back(street);
 }
 
 int main()
@@ -75,6 +72,14 @@ int main()
 
     vector<vector<int>> a(n + 1, vector<int>(n + 1));
 
+    vector<int> batdau;
+    for (int i = 0; i < m; i++)
+    {
+        int tmp;
+        cin >> tmp;
+        batdau.push_back(tmp);
+    }
+
     for (int i = 1; i <= n; i++)
     {
         for (int j = 1; j <= n; j++)
@@ -84,7 +89,10 @@ int main()
     }
 
     vector<Street> v;
-    gts1(n, v, a);
+    for (int i = 0; i < batdau.size(); i++)
+    {
+        gts1(n, v, a, batdau[i]);
+    }
 
     int min_cost = INT_MAX;
     for (const auto &s : v)

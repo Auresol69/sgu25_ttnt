@@ -1,0 +1,7 @@
+Cluster 1 centroid: (2, 1)
+    Point: (2, 3)
+    Point: (4, 2)
+    Point: (2, 0)
+Cluster 2 centroid: (7, 4)
+    Point: (7, 5)
+    Point: (8, 4)

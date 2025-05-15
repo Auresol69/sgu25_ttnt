@@ -2,48 +2,39 @@
 #include <vector>
 #include <algorithm>
 #define maxN 10000
-
 using namespace std;
 
-int n, m;
+int n;
 vector<int> v[maxN];
-int color[maxN] = {0};
+vector<int> color(maxN, 0);
 
-// Hàm nhập đồ thị
-void input(vector<int> *v, const int &n, const int &m)
+// Đọc ma trận kề
+void input()
 {
-    for (int i = 0; i < m; i++)
+    for (int i = 0; i < n; i++)
     {
-        int u, w;
-        cin >> u >> w;
-        v[u].push_back(w);
-        v[w].push_back(u);
+        for (int j = 0; j < n; j++)
+        {
+            int x;
+            cin >> x;
+            if (x == 1)
+            {
+                v[i].push_back(j);
+            }
+        }
     }
 }
 
-// Kiểm tra xem màu có hợp lệ với đỉnh u không
 bool check(int u, int c)
 {
-    for (int tmp : v[u])
+    for (int neighbor : v[u])
     {
-        if (color[tmp] == c)
+        if (color[neighbor] == c)
             return false;
     }
     return true;
 }
 
-// Tô màu cho đỉnh nếu hợp lệ
-int ToMau(int u, int mau)
-{
-    if (!color[u] && check(u, mau))
-    {
-        color[u] = mau;
-        return 1;
-    }
-    return 0;
-}
-
-// Hàm sắp xếp đỉnh theo bậc giảm dần
 vector<int> sortVerticesByDegree()
 {
     vector<pair<int, int>> degree;
@@ -52,7 +43,6 @@ vector<int> sortVerticesByDegree()
         degree.push_back({v[i].size(), i});
     }
     sort(degree.rbegin(), degree.rend());
-
     vector<int> sortedVertices;
     for (auto &p : degree)
     {
@@ -61,7 +51,6 @@ vector<int> sortVerticesByDegree()
     return sortedVertices;
 }
 
-// Xuất kết quả tô màu
 void output()
 {
     for (int i = 0; i < n; i++)
@@ -73,22 +62,30 @@ void output()
 int main()
 {
     freopen("color1.txt", "r", stdin);
-    cin >> n >> m;
-    input(v, n, m);
+    cin >> n;
+    input();
 
-    // Sắp xếp đỉnh theo bậc giảm dần
     vector<int> sortedVertices = sortVerticesByDegree();
 
-    int colored = 0, mau = 1;
-    while (colored < n)
+    int mau = 1;
+    while (true)
     {
+        bool found = false;
         for (int i : sortedVertices)
         {
-            colored += ToMau(i, mau);
+            if (color[i] == 0 && check(i, mau))
+            {
+                color[i] = mau;
+                found = true;
+            }
         }
+        if (!found)
+            break;
         mau++;
     }
 
     output();
+    cout << "Max: " << mau;
+
     return 0;
 }

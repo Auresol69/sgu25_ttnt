@@ -38,7 +38,7 @@ private:
 public:
     void readFile()
     {
-        ifstream fin("color4.txt");
+        ifstream fin("color1.txt");
         fin >> n;
         c.resize(n, vector<int>(n));
 
